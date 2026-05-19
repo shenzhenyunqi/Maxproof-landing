@@ -2,6 +2,7 @@ import express from "express";
 import { createServer as createViteServer } from "vite";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import path from "path";
 
 dotenv.config();
 
@@ -65,6 +66,11 @@ async function startServer() {
   } else {
     // Serve static files in production
     app.use(express.static("dist"));
+
+    // SPA fallback: 非 /api 的请求都回退到 index.html，交给 React Router 处理
+    app.get(/^\/(?!api).*/, (_req, res) => {
+      res.sendFile(path.resolve("dist/index.html"));
+    });
   }
 
   app.listen(PORT, "0.0.0.0", () => {
