@@ -6,3 +6,7 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# 本地 agent 工具配置，与产品代码无关
+.claude/
+.impeccable/
