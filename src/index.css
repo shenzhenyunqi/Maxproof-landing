@@ -11,37 +11,47 @@
 @variant dark (&:is(.dark *));
 
 @theme {
-  /* ── 品牌色：Drenched 策略 ──────────────────────────────────────────────
-     朱砂承担 50%+ 版面。不做中性色兜底 —— 浸染方案里一旦用灰色收边，
-     承诺度就塌了，页面会退回「有个红色的 SaaS 站」。
-     配色刻意避开红+金这个文化符号反射，冷调点缀走青瓷绿。
-     全部数值经 WCAG 实算，明暗两套见文件末尾的对比度表。 */
-  --color-shell: oklch(0.478 0.176 30);
-  --color-shell-deep: oklch(0.372 0.140 30);
-  --color-paper: oklch(0.976 0.006 40);
-  /* bone 是**浸染面上**的 CTA 底（压在朱砂上对比极强），不是第二明面 ——
-     它与 paper 只差 1%，当交替区块底会让相邻两段看着一模一样。第二明面用 blush，
-     与 paper 的相对亮度差 0.135，肉眼可辨。 */
-  --color-bone: oklch(0.968 0.012 40);
-  --color-blush: oklch(0.928 0.022 30);
-  --color-ink: oklch(0.205 0.028 30);
-  --color-ink-raise: oklch(0.262 0.030 30);
-  --color-ink-soft: oklch(0.415 0.022 30);
-  --color-ink-dim: oklch(0.720 0.020 30);
-  --color-celadon: oklch(0.842 0.078 168);
-  --color-celadon-deep: oklch(0.522 0.094 168);
+  /* ── 品牌色：冷色系 Drenched ─────────────────────────────────────────────
+     深孔雀蓝（hue 205）承担 50%+ 版面。不做中性色兜底 —— 浸染方案里一旦
+     用灰色收边，承诺度就塌了。
+
+     ⚠️ 色相刻意停在 205，**不要往 255–265 挪**：那是 SaaS 蓝的色相区，
+     也正是本页改版前 `#2563EB` 蓝紫渐变所在的位置，挪过去等于把整轮改版
+     的前提退回去。青蓝在 sRGB 的彩度上限远低于红（hue 205 / L=0.455 只到
+     0.0775，朱砂能到 0.176），所以 shell 是**贴着色域上限**取的，再加彩度
+     只会被裁切成同一个颜色。
+
+     点缀走暖赭石（hue 78 / 62）：冷面上的暖点形成互补张力，且这是搪瓷招牌
+     与工装的配色，接住 PRODUCT.md 里「橱窗、直率、有货感」的定位。
+     全部数值经 WCAG 实算，明暗两套 18 对组合见文件末尾的对比度表。 */
+  --color-shell: oklch(0.455 0.074 205);
+  /* 暗色模式下的浸染。同一个色相压深两档 —— 直接沿用亮色 shell 会在暗底页面
+     上发光刺眼，而换成中性深色又会让品牌色在暗色模式里整个消失。 */
+  --color-shell-dark: oklch(0.335 0.0555 205);
+  --color-paper: oklch(0.976 0.005 205);
+  /* bone 是**浸染面上**的 CTA 底（压在孔雀蓝上对比强），不是第二明面 ——
+     它与 paper 只差 1%，当交替区块底会让相邻两段看着一模一样。第二明面用 mist，
+     与 paper 的相对亮度差 0.126，肉眼可辨。 */
+  --color-bone: oklch(0.968 0.010 205);
+  --color-mist: oklch(0.928 0.020 205);
+  --color-ink: oklch(0.203 0.024 240);
+  --color-ink-raise: oklch(0.262 0.026 240);
+  --color-ink-soft: oklch(0.412 0.020 240);
+  --color-ink-dim: oklch(0.718 0.016 240);
+  --color-amber: oklch(0.822 0.132 78);
+  --color-amber-deep: oklch(0.548 0.108 62);
 
   /* 旧令牌名保留（Privacy / Terms 直接依赖，改名等于改那两页），只换值。 */
-  --color-background-light: oklch(0.976 0.006 40);
-  --color-background-dark: oklch(0.205 0.028 30);
-  --color-surface-light: oklch(0.945 0.010 40);
-  --color-surface-dark: oklch(0.262 0.030 30);
-  --color-card-light: oklch(0.992 0.004 40);
-  --color-card-dark: oklch(0.262 0.030 30);
-  --color-text-light: oklch(0.205 0.028 30);
-  --color-text-dark: oklch(0.976 0.006 40);
-  --color-muted-light: oklch(0.415 0.022 30);
-  --color-muted-dark: oklch(0.720 0.020 30);
+  --color-background-light: oklch(0.976 0.005 205);
+  --color-background-dark: oklch(0.203 0.024 240);
+  --color-surface-light: oklch(0.945 0.012 205);
+  --color-surface-dark: oklch(0.262 0.026 240);
+  --color-card-light: oklch(0.992 0.003 205);
+  --color-card-dark: oklch(0.262 0.026 240);
+  --color-text-light: oklch(0.203 0.024 240);
+  --color-text-dark: oklch(0.976 0.005 205);
+  --color-muted-light: oklch(0.412 0.020 240);
+  --color-muted-dark: oklch(0.718 0.016 240);
 
   --font-display: "Archivo", system-ui, sans-serif;
   --font-sans: "Archivo", system-ui, sans-serif;
@@ -94,15 +104,18 @@
 }
 
 @layer components {
-  /* 浸染区块。承担品牌的那一半版面。 */
+  /* 浸染区块。承担品牌的那一半版面。
+     暗色分支写在这里而不是让每个消费点各写一遍 `dark:` —— hero 与定价两处
+     都用它，漏一处就会在暗色模式下留一块刺眼的亮色带（改版前正是这个状态：
+     明暗主题只覆盖了中性区块，浸染区在两种模式下一模一样）。 */
   .drench {
     background-color: var(--color-shell);
     color: var(--color-paper);
   }
 
-  .drench-deep {
-    background-color: var(--color-shell-deep);
-    color: var(--color-paper);
+  :is(.dark *) .drench,
+  .dark .drench {
+    background-color: var(--color-shell-dark);
   }
 
   /* 浸染面上的次级文字：用纸色的透明度，**不用灰色** ——
@@ -143,10 +156,22 @@
   }
 }
 
-/* ── WCAG AA 实算记录（scripts 见提交说明，勿凭肉眼改动这些值）──────────
-   亮色：paper/shell 6.72 · paper/shell-deep 10.31 · ink/paper 16.80
-        ink-soft/paper 8.13 · ink/bone 16.38 · celadon/shell 4.59(大字 3:1)
-        celadon/shell-deep 7.04 · celadon-deep/paper 4.84
-   暗色：paper/ink 16.80 · ink-dim/ink 7.21 · ink-dim/ink-raise 6.24
-        paper/ink-raise 14.53 · celadon/ink 11.47 · paper/shell 6.72
-   已知不可用组合：ink on shell = 2.50。浸染面上的文字一律走 paper，不用 ink。 */
+/* ── WCAG AA 实算记录（勿凭肉眼改动这些值）────────────────────────────────
+   每一项都是 OKLCH→sRGB→WCAG 实算的结果，不是估的。改任何一个色值都要把
+   受影响的行重算一遍；正文一律 ≥4.5、大字与非文字元素 ≥3。
+
+   亮色：ink/paper 16.78 · ink-soft/paper 8.15 · ink/mist 14.62
+        ink-soft/mist 7.10 · shell/mist 5.73 · shell/paper 6.58
+        paper/shell 6.58 · bone/shell 6.44 · ink/bone 16.42
+        amber-deep/paper 4.71 · amber-deep/bone 4.61 · amber/shell 4.01(非文字)
+
+   暗色：paper/ink 16.78 · ink-dim/ink 7.20 · ink-dim/ink-raise 6.18
+        paper/ink-raise 14.38 · amber/ink 10.21 · amber/ink-raise 8.75
+        paper/shell-dark 10.95 · amber/shell-dark 6.67
+
+   两条硬规矩：
+   1. **浸染面上的文字一律走 paper，不用 ink** —— ink on shell 只有 2.44，
+      是这套色板里唯一不可用的组合。次级文字用 .on-drench-soft（paper 的
+      透明度），不要用灰色：灰字压在饱和色上会发脏。
+   2. **shell 已贴着 sRGB 色域上限**（hue 205 / L=0.455 的彩度天花板是
+      0.0775，当前取 0.074）。再加彩度不会更鲜艳，只会被裁切。 */

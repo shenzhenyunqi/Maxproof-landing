@@ -8,8 +8,10 @@
       name="description"
       content="Turn your TikTok and Instagram videos into shoppable carousels, stories, and pop-ups on your Shopify storefront. $10 a month, never billed by views."
     />
-    <!-- 移动端浏览器 chrome 跟随浸染色，滚到顶时与 hero 连成一片。 -->
-    <meta name="theme-color" content="#aa1f12" />
+    <!-- 移动端浏览器 chrome 跟随浸染色，滚到顶时与 hero 连成一片。
+         两个模式各给一条，否则暗色模式下会露出一条亮色带。 -->
+    <meta name="theme-color" content="#0d626a" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#033f44" media="(prefers-color-scheme: dark)" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Maxproof — Shoppable video for Shopify" />
     <meta
@@ -17,6 +19,21 @@
       content="Your best videos are selling on TikTok. Not on your store. Maxproof puts them back where the margin is."
     />
     <meta name="twitter:card" content="summary_large_image" />
+    <script>
+      // 首帧之前就把主题类打上。放在 head 里同步执行是有意的 —— 交给 React
+      // 挂载后再加，暗色用户每次加载都会先闪一帧白底。
+      // 判定逻辑与 Navbar 的初始 state 同源，改一处必须改两处。
+      (function () {
+        try {
+          var t = localStorage.theme;
+          if (t === 'dark' || (t !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {
+          // localStorage 在隐私模式 / 三方 cookie 被禁时会抛错，静默退回亮色。
+        }
+      })();
+    </script>
     <script>
       // Fix for "Cannot set property fetch of #<Window> which has only a getter"
       // This happens because some libraries (like react-router-dom v7) try to polyfill/override fetch

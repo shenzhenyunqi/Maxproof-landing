@@ -10,12 +10,20 @@ const SECTIONS = [
 ];
 
 export default function Navbar() {
+  /**
+   * 与 index.html 里的首帧脚本**同源**：显式选择优先，没选过才跟随系统。
+   *
+   * 原来这里只判断 `classList.contains('dark')` 与「localStorage 里没有 theme
+   * 时跟随系统」，唯独不读已存的 `theme === 'dark'` —— 结果是选了暗色刷新一次
+   * 就掉回亮色，且下面的 effect 会把 localStorage 覆写成 'light'，把用户的选择
+   * 静默丢掉。两个分支必须都显式判。
+   */
   const [isDark, setIsDark] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return document.documentElement.classList.contains('dark') ||
-             (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    }
-    return false;
+    if (typeof window === 'undefined') return false;
+    const stored = localStorage.theme;
+    if (stored === 'dark') return true;
+    if (stored === 'light') return false;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);

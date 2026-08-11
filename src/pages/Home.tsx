@@ -112,7 +112,7 @@ function InviteBand() {
             {/* 等宽 + 字距是照 app 内 Plan 页对邀请码的处理：商家要肉眼抄写，
                 比例字体下 l/1、O/0 会读混。码的字符集含大小写字母。 */}
             <code
-              className="border border-paper/30 px-5 py-3.5 text-xl font-semibold text-celadon"
+              className="border border-paper/30 px-5 py-3.5 text-xl font-semibold text-amber"
               style={{
                 fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
                 letterSpacing: "0.14em",
@@ -142,7 +142,7 @@ function InviteBand() {
             ].map((step, i) => (
               <li key={i} className="flex gap-4">
                 <span
-                  className="shrink-0 text-2xl font-extrabold leading-none text-celadon"
+                  className="shrink-0 text-2xl font-extrabold leading-none text-amber"
                   style={{ fontStretch: "118%" }}
                 >
                   {i + 1}
@@ -217,7 +217,7 @@ export default function Home() {
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           >
             <p className="mb-7 inline-flex items-center gap-2.5 border border-paper/35 px-3 py-1.5 text-[12px] font-semibold uppercase tracking-[0.14em]">
-              <span className="h-1.5 w-1.5 rounded-full bg-celadon" />
+              <span className="h-1.5 w-1.5 rounded-full bg-amber" />
               Built for Shopify
             </p>
             <h1
@@ -281,7 +281,7 @@ export default function Home() {
           <div className="grid gap-10 md:grid-cols-3 md:gap-8">
             {/* Carousel：横向条带 */}
             <Rise>
-              <div className="mb-6 h-[190px] overflow-hidden border border-ink/12 bg-blush p-4 dark:border-paper/12 dark:bg-ink-raise">
+              <div className="mb-6 h-[190px] overflow-hidden border border-ink/12 bg-mist p-4 dark:border-paper/12 dark:bg-ink-raise">
                 {/* 只有一张占位图，靠 object-position 错开取景，避免四格读成同一张贴图。
                     最后一格切出容器右缘，暗示这一排是可以横向滚动的。 */}
                 <div className="flex h-full gap-2">
@@ -312,11 +312,11 @@ export default function Home() {
             <Rise delay={0.08}>
               {/* 圆形，不是 9/16 —— rounded-full 压在竖屏比例上会拉成椭圆，
                   而 stories 气泡在任何平台上都是正圆，形状本身就是识别线索。 */}
-              <div className="mb-6 flex h-[190px] items-center justify-center gap-4 border border-ink/12 bg-blush p-4 dark:border-paper/12 dark:bg-ink-raise">
+              <div className="mb-6 flex h-[190px] items-center justify-center gap-4 border border-ink/12 bg-mist p-4 dark:border-paper/12 dark:bg-ink-raise">
                 {['26% 30%', '54% 16%', '74% 52%'].map((pos) => (
                   <div
                     key={pos}
-                    className="aspect-square w-[64px] shrink-0 overflow-hidden rounded-full ring-2 ring-shell ring-offset-[3px] ring-offset-blush dark:ring-celadon dark:ring-offset-ink-raise"
+                    className="aspect-square w-[64px] shrink-0 overflow-hidden rounded-full ring-2 ring-shell ring-offset-[3px] ring-offset-mist dark:ring-amber dark:ring-offset-ink-raise"
                   >
                     <img
                       src={PRODUCT_SHOT}
@@ -339,7 +339,7 @@ export default function Home() {
             <Rise delay={0.16}>
               {/* 底层要读得出「这是一个商品页」，浮层才有「浮在页面上」的意思；
                   只画几根灰线的话，这一格看上去就只是空的。 */}
-              <div className="relative mb-6 h-[190px] overflow-hidden border border-ink/12 bg-blush p-4 dark:border-paper/12 dark:bg-ink-raise">
+              <div className="relative mb-6 h-[190px] overflow-hidden border border-ink/12 bg-mist p-4 dark:border-paper/12 dark:bg-ink-raise">
                 <div className="flex gap-3 opacity-45">
                   <div className="h-[60px] w-[46px] shrink-0 bg-ink/20 dark:bg-paper/20" />
                   <div className="flex-1 space-y-2 pt-1">
@@ -380,7 +380,7 @@ export default function Home() {
       </section>
 
       {/* ── 三步。这里的编号是真序列，不是装饰性小节标记 ──────────────── */}
-      <section id="how-it-works" className="bg-blush py-20 dark:bg-ink-raise lg:py-28">
+      <section id="how-it-works" className="bg-mist py-20 dark:bg-ink-raise lg:py-28">
         <div className="mx-auto max-w-[1400px] px-6 sm:px-8 lg:px-12">
           <Rise>
             <h2
@@ -412,7 +412,7 @@ export default function Home() {
                 <li className="list-none">
                   <div className="mb-5 flex items-baseline gap-4">
                     <span
-                      className="text-5xl font-extrabold leading-none text-shell dark:text-celadon"
+                      className="text-5xl font-extrabold leading-none text-shell dark:text-amber"
                       style={{ fontStretch: "118%" }}
                     >
                       {s.n}
@@ -445,7 +445,7 @@ export default function Home() {
             </p>
             <a
               href={APP_STORE_URL}
-              className="group inline-flex items-center gap-2.5 border-b-2 border-celadon pb-1 text-base font-bold text-celadon"
+              className="group inline-flex items-center gap-2.5 border-b-2 border-amber pb-1 text-base font-bold text-amber"
             >
               Start tracking it
               <Arrow className="h-4 w-4 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1" />
@@ -542,7 +542,7 @@ export default function Home() {
                       'Video analytics',
                     ].map((f) => (
                       <li key={f} className="flex gap-3 text-ink">
-                        <Check className="mt-1.5 h-3.5 w-3.5 shrink-0 text-celadon-deep" />
+                        <Check className="mt-1.5 h-3.5 w-3.5 shrink-0 text-amber-deep" />
                         <span className="text-[15px] leading-snug">{f}</span>
                       </li>
                     ))}
@@ -599,7 +599,7 @@ export default function Home() {
                     id="name"
                     required
                     placeholder="Your name"
-                    className="w-full border border-ink/25 bg-transparent px-4 py-3 text-ink placeholder:text-ink-soft focus:border-shell focus:outline-none dark:border-paper/25 dark:text-paper dark:placeholder:text-ink-dim dark:focus:border-celadon"
+                    className="w-full border border-ink/25 bg-transparent px-4 py-3 text-ink placeholder:text-ink-soft focus:border-shell focus:outline-none dark:border-paper/25 dark:text-paper dark:placeholder:text-ink-dim dark:focus:border-amber"
                   />
                 </div>
                 <div>
@@ -611,7 +611,7 @@ export default function Home() {
                     id="email"
                     required
                     placeholder="you@yourstore.com"
-                    className="w-full border border-ink/25 bg-transparent px-4 py-3 text-ink placeholder:text-ink-soft focus:border-shell focus:outline-none dark:border-paper/25 dark:text-paper dark:placeholder:text-ink-dim dark:focus:border-celadon"
+                    className="w-full border border-ink/25 bg-transparent px-4 py-3 text-ink placeholder:text-ink-soft focus:border-shell focus:outline-none dark:border-paper/25 dark:text-paper dark:placeholder:text-ink-dim dark:focus:border-amber"
                   />
                 </div>
               </div>
@@ -624,12 +624,12 @@ export default function Home() {
                   required
                   rows={4}
                   placeholder="Tell us about your store and what you're trying to do."
-                  className="w-full resize-none border border-ink/25 bg-transparent px-4 py-3 text-ink placeholder:text-ink-soft focus:border-shell focus:outline-none dark:border-paper/25 dark:text-paper dark:placeholder:text-ink-dim dark:focus:border-celadon"
+                  className="w-full resize-none border border-ink/25 bg-transparent px-4 py-3 text-ink placeholder:text-ink-soft focus:border-shell focus:outline-none dark:border-paper/25 dark:text-paper dark:placeholder:text-ink-dim dark:focus:border-amber"
                 />
               </div>
 
               {formStatus === 'error' && (
-                <p role="alert" className="border border-shell bg-shell/8 px-4 py-3 text-sm font-medium text-shell dark:bg-shell/20 dark:text-celadon">
+                <p role="alert" className="border border-shell bg-shell/8 px-4 py-3 text-sm font-medium text-shell dark:bg-shell/20 dark:text-amber">
                   {errorMessage}
                 </p>
               )}
