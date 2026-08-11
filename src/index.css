@@ -1,6 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons+Round');
+/* Archivo 单科目变量字，两根轴都要：wght 100–900 用于层级，wdth 62–125 用于展示字的
+   横向扩张。选它不是因为「好看的无衬线」，是因为它出身于印刷标牌 —— 落地页的战略
+   参照是商家的零售橱窗，不是 SaaS 供应商的产品页（见 PRODUCT.md）。
+   前身的 Inter + Plus Jakarta Sans 是同轴双无衬线，不构成对比配对，且两款都是训练
+   数据默认值；这里改为**一个科目 + 真实的宽度/字重对比**。 */
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap');
 
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
@@ -8,68 +11,142 @@
 @variant dark (&:is(.dark *));
 
 @theme {
-  --color-primary: #2563EB;
-  --color-primary-hover: #1d4ed8;
-  --color-background-light: #ffffff;
-  --color-background-dark: #0f1115;
-  --color-surface-light: #f3f4f6;
-  --color-surface-dark: #181b21;
-  --color-card-light: #ffffff;
-  --color-card-dark: #1f2229;
-  --color-text-light: #1f2937;
-  --color-text-dark: #e5e7eb;
-  --color-muted-light: #6b7280;
-  --color-muted-dark: #9ca3af;
-  --color-accent-green: #10b981;
-  --color-contact-green: #00E699;
-  --color-contact-green-hover: #00cc88;
-  --color-footer-bg: #f9fafb;
+  /* ── 品牌色：Drenched 策略 ──────────────────────────────────────────────
+     朱砂承担 50%+ 版面。不做中性色兜底 —— 浸染方案里一旦用灰色收边，
+     承诺度就塌了，页面会退回「有个红色的 SaaS 站」。
+     配色刻意避开红+金这个文化符号反射，冷调点缀走青瓷绿。
+     全部数值经 WCAG 实算，明暗两套见文件末尾的对比度表。 */
+  --color-shell: oklch(0.478 0.176 30);
+  --color-shell-deep: oklch(0.372 0.140 30);
+  --color-paper: oklch(0.976 0.006 40);
+  /* bone 是**浸染面上**的 CTA 底（压在朱砂上对比极强），不是第二明面 ——
+     它与 paper 只差 1%，当交替区块底会让相邻两段看着一模一样。第二明面用 blush，
+     与 paper 的相对亮度差 0.135，肉眼可辨。 */
+  --color-bone: oklch(0.968 0.012 40);
+  --color-blush: oklch(0.928 0.022 30);
+  --color-ink: oklch(0.205 0.028 30);
+  --color-ink-raise: oklch(0.262 0.030 30);
+  --color-ink-soft: oklch(0.415 0.022 30);
+  --color-ink-dim: oklch(0.720 0.020 30);
+  --color-celadon: oklch(0.842 0.078 168);
+  --color-celadon-deep: oklch(0.522 0.094 168);
 
-  --font-display: "Plus Jakarta Sans", sans-serif;
-  --font-sans: "Inter", sans-serif;
+  /* 旧令牌名保留（Privacy / Terms 直接依赖，改名等于改那两页），只换值。 */
+  --color-background-light: oklch(0.976 0.006 40);
+  --color-background-dark: oklch(0.205 0.028 30);
+  --color-surface-light: oklch(0.945 0.010 40);
+  --color-surface-dark: oklch(0.262 0.030 30);
+  --color-card-light: oklch(0.992 0.004 40);
+  --color-card-dark: oklch(0.262 0.030 30);
+  --color-text-light: oklch(0.205 0.028 30);
+  --color-text-dark: oklch(0.976 0.006 40);
+  --color-muted-light: oklch(0.415 0.022 30);
+  --color-muted-dark: oklch(0.720 0.020 30);
 
-  --shadow-glow: 0 0 40px rgba(37, 99, 235, 0.2);
-  --shadow-glow-blue: 0 0 30px rgba(37, 99, 235, 0.3);
-  --shadow-card-hover: 0 10px 40px -10px rgba(0,0,0,0.1);
-  --shadow-soft: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
-  --shadow-contact: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --font-display: "Archivo", system-ui, sans-serif;
+  --font-sans: "Archivo", system-ui, sans-serif;
 
-  --background-image-hero-soft-gradient: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
-  --background-image-hero-soft-gradient-dark: linear-gradient(135deg, #0f1115 0%, #171a21 100%);
-  --background-image-pill-gradient: linear-gradient(90deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
-  --background-image-interactive-gradient: linear-gradient(120deg, #3b82f6 0%, #8b5cf6 100%);
+  /* 语义化 z 轴。没有 999 / 9999。
+     ⚠️ 命名空间必须是 `--z-index-*`：Tailwind v4 只从这个前缀生成 z-* 工具类。
+     写成 `--z-sticky` 类名照样能写出来，但 computed z-index 是 auto —— 导航栏
+     会被 hero 里 motion 的 transform 层叠上下文盖住（已实测踩过）。 */
+  --z-index-dropdown: 10;
+  --z-index-sticky: 20;
+  --z-index-backdrop: 30;
+  --z-index-modal: 40;
+  --z-index-toast: 50;
+  --z-index-tooltip: 60;
+
+  /* ease-out-expo。不用 bounce、不用 elastic。 */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-html {
-  scroll-behavior: smooth;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-paper text-ink dark:bg-ink dark:text-paper font-sans antialiased flex flex-col min-h-screen;
+    font-synthesis-weight: none;
+  }
+
+  /* 展示字统一在这里定义，Privacy / Terms 的 h1/h2 因此自动继承新的扩张字面，
+     那两页一行都不用改。字距下限 -0.04em，这里取 -0.022em，不让字母粘连。 */
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    font-stretch: 116%;
+    letter-spacing: -0.022em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* 焦点态不靠颜色单独区分：双环，浸染面与纸面都可见。 */
+  :focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
 }
 
-body {
-  @apply bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark font-sans transition-colors duration-300 antialiased flex flex-col min-h-screen;
+@layer components {
+  /* 浸染区块。承担品牌的那一半版面。 */
+  .drench {
+    background-color: var(--color-shell);
+    color: var(--color-paper);
+  }
+
+  .drench-deep {
+    background-color: var(--color-shell-deep);
+    color: var(--color-paper);
+  }
+
+  /* 浸染面上的次级文字：用纸色的透明度，**不用灰色** ——
+     灰字压在饱和色上会发灰发脏，这是浸染方案最常见的塌陷点。 */
+  .on-drench-soft {
+    color: color-mix(in oklch, var(--color-paper) 78%, transparent);
+  }
+
+  /* 正文行长闸门。65–75ch。 */
+  .measure {
+    max-width: 68ch;
+  }
+
+  .measure-tight {
+    max-width: 46ch;
+  }
 }
 
-.material-symbols-outlined {
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-}
-
-.text-gradient-subtle {
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-image: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
-}
-
-.text-gradient-interactive {
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-image: linear-gradient(120deg, #3b82f6 0%, #8b5cf6 100%);
-}
-
+/* Privacy / Terms 的排版页沿用既有结构，只跟随新令牌。 */
 .prose h2 {
-  @apply text-gray-900 dark:text-white font-display font-bold;
+  @apply text-ink dark:text-paper font-bold;
 }
 
 .prose p, .prose li {
-  @apply text-muted-light dark:text-muted-dark leading-relaxed;
+  @apply text-ink-soft dark:text-ink-dim leading-relaxed;
 }
+
+/* 动效一律要有降级路径。这是全局兜底，组件里的 motion 另行处理。 */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── WCAG AA 实算记录（scripts 见提交说明，勿凭肉眼改动这些值）──────────
+   亮色：paper/shell 6.72 · paper/shell-deep 10.31 · ink/paper 16.80
+        ink-soft/paper 8.13 · ink/bone 16.38 · celadon/shell 4.59(大字 3:1)
+        celadon/shell-deep 7.04 · celadon-deep/paper 4.84
+   暗色：paper/ink 16.80 · ink-dim/ink 7.21 · ink-dim/ink-raise 6.24
+        paper/ink-raise 14.53 · celadon/ink 11.47 · paper/shell 6.72
+   已知不可用组合：ink on shell = 2.50。浸染面上的文字一律走 paper，不用 ink。 */
