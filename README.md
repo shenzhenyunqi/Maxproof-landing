@@ -51,7 +51,7 @@ Serves on http://localhost:3000 with Vite HMR.
 
 ### Environment
 
-Create a `.env` in the repo root. `.env*` is gitignored except `.env.example`.
+Create a `.env` in the repo root. All `.env*` files are gitignored — never commit one.
 
 | Variable | Required | Purpose |
 |---|---|---|
@@ -59,9 +59,6 @@ Create a `.env` in the repo root. `.env*` is gitignored except `.env.example`.
 | `SMTP_PASS` | yes | Password for that mailbox |
 
 The SMTP host is hardcoded to Netease Enterprise Mail (`smtphz.qiye.163.com:465`, TLS).
-
-> `.env.example` still lists `GEMINI_API_KEY` and `APP_URL` from the Google AI Studio scaffold
-> this repo was generated from. Neither is read by any code — see [Known cruft](#known-cruft).
 
 ## Scripts
 
