@@ -28,15 +28,15 @@ async function startServer() {
         port: 465,
         secure: true, // true for 465, false for other ports
         auth: {
-          user: process.env.SMTP_USER || "***REMOVED***",
-          pass: process.env.SMTP_PASS || "***REMOVED***",
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
         },
       });
 
       // Send email to self
       const info = await transporter.sendMail({
-        from: `"Maxproof Contact Form" <${process.env.SMTP_USER || "***REMOVED***"}>`, // sender address
-        to: process.env.SMTP_USER || "***REMOVED***", // list of receivers (self)
+        from: `"Maxproof Contact Form" <${process.env.SMTP_USER}>`, // sender address
+        to: process.env.SMTP_USER, // list of receivers (self)
         subject: `New Contact Form Submission from ${name}`, // Subject line
         text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`, // plain text body
         html: `

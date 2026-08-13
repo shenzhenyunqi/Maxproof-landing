@@ -1,0 +1,152 @@
+// 敏感值一律走 Jenkins 凭据库（2026-08-13 泄露整改）：
+// feishu-webhook-url / feishu-secret / deploy-host / deploy-password 四个凭据需在 Jenkins 侧预先创建。
+pipeline {
+    agent any
+
+    environment {
+        // ------------------ 飞书配置 ------------------
+        FEISHU_WEBHOOK_URL = credentials('feishu-webhook-url')
+        FEISHU_SECRET      = credentials('feishu-secret')
+
+        // ------------------ 基础配置 ------------------
+        CR_REGISTRY       = 'maxvideohub-cn-beijing.cr.volces.com'
+        CR_IMAGE_NAME     = 'maxvideohub/maxproof-portal'
+        CR_CREDENTIALS_ID = 'volcengine-aksk'
+
+        // ------------------ 部署配置 ------------------
+        DEPLOY_HOST           = credentials('deploy-host')
+        DEPLOY_PASSWORD       = credentials('deploy-password')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps { checkout scm }
+        }
+
+        stage('Build & Push Docker Image') {
+            steps {
+                script {
+                    env.IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    env.FULL_IMAGE_NAME = "${env.CR_REGISTRY}/${env.CR_IMAGE_NAME}:${env.IMAGE_TAG}"
+
+                    withCredentials([usernamePassword(credentialsId: env.CR_CREDENTIALS_ID, usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                        sh 'echo $PASS | docker login ${CR_REGISTRY} -u ${USER} --password-stdin'
+                    }
+                    sh "docker build -t ${env.FULL_IMAGE_NAME} ."
+                    sh "docker push ${env.FULL_IMAGE_NAME}"
+
+                    echo "=========================================="
+                    echo "✅ 镜像推送成功！"
+                    echo "📦 镜像地址: ${env.FULL_IMAGE_NAME}"
+                    echo "=========================================="
+                }
+            }
+        }
+
+        stage('Deploy to Prod') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: env.CR_CREDENTIALS_ID, usernameVariable: 'REGISTRY_USER', passwordVariable: 'REGISTRY_PASS')]) {
+                        def remoteScript = """
+                            echo '${env.REGISTRY_PASS}' | docker login ${env.CR_REGISTRY} -u ${env.REGISTRY_USER} --password-stdin
+                            docker pull ${env.FULL_IMAGE_NAME}
+                            docker stop maxproof-portal || true
+                            docker rm maxproof-portal || true
+                            docker run -d --name maxproof-portal --restart unless-stopped -p 3003:3000 -e NODE_ENV=production ${env.FULL_IMAGE_NAME}
+                        """
+                        writeFile file: 'remote_deploy.sh', text: remoteScript
+
+                        // 使用 docker 容器运行 sshpass，避免宿主机缺少工具的问题
+                        sh """
+                            docker run --rm -v "\$(pwd):/workspace" -w /workspace alpine:latest /bin/sh -c "
+                                apk add --no-cache openssh-client sshpass && \\\\
+                                export SSHPASS='${env.DEPLOY_PASSWORD}' && \\\\
+                                sshpass -e ssh -o StrictHostKeyChecking=no root@${env.DEPLOY_HOST} 'bash -s' < remote_deploy.sh
+                            "
+                        """
+                        sh "rm -f remote_deploy.sh"
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            script { notifyFeishu("SUCCESS", "镜像构建推送成功", "镜像: ${env.FULL_IMAGE_NAME}") }
+        }
+        failure {
+            script { notifyFeishu("FAILURE", "镜像构建失败", "请检查 Jenkins 日志。") }
+        }
+        always {
+            sh "docker logout ${env.CR_REGISTRY} || true"
+        }
+    }
+}
+
+// ---------------------- 飞书通知 ----------------------
+def notifyFeishu(status, title, message) {
+    def color = "grey"
+    def icon = "🔔"
+    switch(status.toUpperCase()) {
+        case "SUCCESS": color = "green"; icon = "✅"; break
+        case "FAILURE": color = "red";   icon = "❌"; break
+    }
+
+    def pyScript = """
+        import time, hmac, hashlib, base64
+        ts = str(int(time.time()))
+        secret = '${env.FEISHU_SECRET}'
+        msg = ts + '\\n' + secret
+        sig = base64.b64encode(hmac.new(msg.encode('utf-8'), b'', digestmod=hashlib.sha256).digest()).decode('utf-8')
+        print(ts + ',' + sig, end='')
+    """.stripIndent().trim()
+
+    try {
+        def signOutput = sh(script: "python3 -c \"${pyScript}\"", returnStdout: true).trim()
+        def signParts = signOutput.split(',')
+        if (signParts.size() != 2) { error "Sign Calculation Failed" }
+        def timestamp = signParts[0]
+        def sign = signParts[1]
+
+        def formattedMessage = message.replaceAll("\n", "\\\\n").replaceAll("\r", "")
+
+        def jsonPayload = """{
+            "timestamp": "${timestamp}",
+            "sign": "${sign}",
+            "msg_type": "interactive",
+            "card": {
+                "config": { "wide_screen_mode": true },
+                "header": {
+                    "template": "${color}",
+                    "title": { "content": "${icon} ${title}", "tag": "plain_text" }
+                },
+                "elements": [
+                    {
+                        "tag": "div",
+                        "text": {
+                            "content": "**项目**: ${env.JOB_NAME}\\n**编号**: #${env.BUILD_NUMBER}\\n**详情**: ${formattedMessage}",
+                            "tag": "lark_md"
+                        }
+                    },
+                    {
+                        "tag": "action",
+                        "actions": [{
+                            "tag": "button",
+                            "text": { "content": "查看控制台", "tag": "plain_text" },
+                            "url": "${env.BUILD_URL}",
+                            "type": "primary"
+                        }]
+                    }
+                ]
+            }
+        }"""
+
+        writeFile file: 'feishu_payload.json', text: jsonPayload, encoding: 'UTF-8'
+        sh "curl -s -X POST -H 'Content-Type: application/json' -d @feishu_payload.json ${env.FEISHU_WEBHOOK_URL}"
+        sh "rm -f feishu_payload.json"
+
+    } catch (e) {
+        echo "通知发送失败: ${e.getMessage()}"
+    }
+}
